@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Профиль пользователя</title>
+</head>
+
+<body>
+    <h2>Добро пожаловать, {{ user.username }}!</h2>
+    <h1>Ваши Уточки</h1>
+    <ul>
+        {% for duck in ducks %}
+        <li>{{ duck.name }} - {{ duck.get_rarity_display }}</li>
+        <img src="{{ duck.image.url }}" alt="{{ duck.name }}">
+        {% empty %}
+        <li>У вас пока нет уточек.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Сделать спин</h2>
+    <form method="post" action="{% url 'spin' %}">
+        {% csrf_token %}
+        <button type="submit">Spin for a Duck!</button>
+    </form>
+
+    <a href="{% url 'logout' %}">Выйти</a>
+</body>
+
+</html>
