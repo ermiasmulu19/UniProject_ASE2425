@@ -6,8 +6,8 @@ from .serializers import DuckSerializer, AuctionSerializer
 
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.views.decorators.http import require_http_methods  # Ensure this line is present
 
 
 class DuckViewSet(viewsets.ModelViewSet):
@@ -56,6 +56,18 @@ def profile(request):
     # Получаем уникальные уточки из аукционов
     ducks = Duck.objects.filter(auction__in=auctions).distinct()
     return render(request, 'profile.html', {'ducks': ducks, 'user': request.user})
+    
+@require_http_methods(["DELETE"])
+def user_delete(request):
+    if request.user.is_authenticated:
+        user=request.user
+        user.delete()
+        
+        return redirect('profile')
+    return redirect('login') 
+
+        
+    
     
 def spin_duck(request):
     if request.method == 'POST':
