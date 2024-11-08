@@ -1,5 +1,6 @@
 import random
 
+from django.http import HttpResponseForbidden, JsonResponse
 from rest_framework import viewsets
 from .models import Duck, Auction
 from .serializers import DuckSerializer, AuctionSerializer
@@ -56,14 +57,17 @@ def profile(request):
     # Получаем уникальные уточки из аукционов
     ducks = Duck.objects.filter(auction__in=auctions).distinct()
     return render(request, 'profile.html', {'ducks': ducks, 'user': request.user})
-    
-@require_http_methods(["DELETE"])
+@require_http_methods(["GET"])
 def user_delete(request):
-    if request.user.is_authenticated:
-        user=request.user
-        user.delete()
-        
-        return redirect('profile')
+    if request.method == 'GET':
+        user = request.user
+
+        if user.is_authenticated:
+            print('aleeeeeeeeeeeeeeee')
+            user.delete()
+            logout(request) 
+            
+            return redirect('profile')
     return redirect('login') 
 
         

@@ -15,5 +15,5 @@ urlpatterns = [
     path('logout/', user_logout, name='logout'),
     path('profile/', profile, name='profile'),
     path('spin/', spin_duck, name='spin'),  # Новый маршрут для спина
-    path('/user/delete', user_delete, name='delete_user')
+    path('user/delete', user_delete, name='delete_user')
 ]
