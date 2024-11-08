@@ -1,13 +1,14 @@
 import random
 
+from django.http import HttpResponseForbidden, JsonResponse
 from rest_framework import viewsets
 from .models import Duck, Auction
 from .serializers import DuckSerializer, AuctionSerializer
 
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.views.decorators.http import require_http_methods  # Ensure this line is present
 
 
 class DuckViewSet(viewsets.ModelViewSet):
@@ -56,6 +57,21 @@ def profile(request):
     # Получаем уникальные уточки из аукционов
     ducks = Duck.objects.filter(auction__in=auctions).distinct()
     return render(request, 'profile.html', {'ducks': ducks, 'user': request.user})
+@require_http_methods(["GET"])
+def user_delete(request):
+    if request.method == 'GET':
+        user = request.user
+
+        if user.is_authenticated:
+            print('aleeeeeeeeeeeeeeee')
+            user.delete()
+            logout(request) 
+            
+            return redirect('profile')
+    return redirect('login') 
+
+        
+    
     
 def spin_duck(request):
     if request.method == 'POST':
