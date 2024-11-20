@@ -63,7 +63,6 @@ def user_delete(request):
         user = request.user
 
         if user.is_authenticated:
-            print('aleeeeeeeeeeeeeeee')
             user.delete()
             logout(request) 
             
