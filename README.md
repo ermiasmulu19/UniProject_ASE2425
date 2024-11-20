@@ -78,6 +78,17 @@ Follow these steps to set up the project locally:
 8. **Access the application:**
 Open your web browser and navigate to http://127.0.0.1:8000/.
 
+
+
+9.**Docker Container Access**
+   if teh conter image is not built then, 
+   
+    docker build -t gacha .
+    
+After building the Docker image, ensure that the container is run on port 8000 using this command:
+
+    docker run -p 8000:8000 gacha
+
 ## Usage
 
 1. Register a new user: Navigate to the /register/ page to create a new account.
