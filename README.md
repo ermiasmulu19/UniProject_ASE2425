@@ -81,7 +81,7 @@ Open your web browser and navigate to http://127.0.0.1:8000/.
 
 
 9.**Docker Container Access**
-   if the conter image is not built then, 
+if the conter image is not built then, 
    
     docker build -t gacha .
     
