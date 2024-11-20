@@ -2,28 +2,33 @@
 <html>
 
 <head>
-    <title>Профиль пользователя</title>
+    <title>User Profile</title>
 </head>
 
 <body>
-    <h2>Добро пожаловать, {{ user.username }}!</h2>
-    <h1>Ваши Уточки</h1>
+    <h2>Welcome, {{ user.username }}!</h2>
+
+    <h1>Your Ducks</h1>
     <ul>
         {% for duck in ducks %}
-        <li>{{ duck.name }} - {{ duck.get_rarity_display }}</li>
-        <img src="{{ duck.image.url }}" alt="{{ duck.name }}">
+        <li>
+            <strong>{{ duck.name }}</strong> - {{ duck.get_rarity_display }}
+            <br>
+            <img src="{{ duck.image.url }}" alt="{{ duck.name }}" style="width: 100px; height: auto;">
+        </li>
         {% empty %}
-        <li>У вас пока нет уточек.</li>
+        <li>You currently have no ducks.</li>
         {% endfor %}
     </ul>
 
-    <h2>Сделать спин</h2>
+    <h2>Spin for a Duck</h2>
     <form method="post" action="{% url 'spin' %}">
         {% csrf_token %}
         <button type="submit">Spin for a Duck!</button>
     </form>
 
-    <a href="{% url 'logout' %}">Выйти</a>
+    <a href="{% url 'logout' %}">Log Out</a>
 </body>
 
 </html>
+    
