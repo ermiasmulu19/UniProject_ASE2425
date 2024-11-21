@@ -1,36 +1,41 @@
-# Gacha Game
+# **Gacha Game**
 
-## Description
+## **Description**
 
-Gacha Game is a web application built with Django that allows users to register, log in, and participate in a "spin" feature to receive virtual ducks with varying rarities. Users can have multiple copies of the same duck, and the game simulates a gacha-style experience where players can collect and manage their ducks.
+Gacha Game is a Django-based web application that provides a gacha-style experience. Users can register, log in, and spin to collect virtual ducks with varying rarities. The game allows for collecting, managing, and viewing multiple ducks in a fun, randomized manner.
 
-## Features
+---
 
-- User registration and authentication (login/logout)
-- Spin feature to receive random ducks
-- Collection of ducks with different rarities
-- Admin interface to manage ducks
-- Responsive design
+## **Features**
 
-## Technologies Used
+- User registration and authentication.
+- Randomized "spin" feature to collect ducks.
+- Ducks categorized by rarity (common, rare, etc.).
+- Ability to own multiple copies of the same duck.
+- Admin panel for duck and user management.
+
+---
+
+## **Technologies Used**
+
+- **Backend:** Python 3.x, Django 5.1.2, Django REST Framework
+- **Database:** SQLite
+- **Frontend:** HTML, CSS
+- **Other:** Docker (optional for containerization)
+
+---
+
+## **Prerequisites**
+
+Ensure you have the following installed:
 
 - Python 3.x
-- Django 5.1.2
-- Django REST Framework
-- SQLite (or any other database of your choice)
-- HTML/CSS for front-end
-
-## Prerequisites
-
-Before you begin, ensure you have met the following requirements:
-
-- Python 3.x installed on your machine
 - pip (Python package installer)
-- Virtual environment (optional but recommended)
+- Docker (optional, if you prefer to use containerization)
 
-## Installation
+---
 
-Follow these steps to set up the project locally:
+## **Installation (Local Environment)**
 
 1. **Clone the repository:**
 
@@ -76,34 +81,41 @@ Follow these steps to set up the project locally:
 
 
 8. **Access the application:**
-Open your web browser and navigate to http://127.0.0.1:8000/.
+Open your web browser and navigate to http://127.0.0.1:8000/login
 
 
 
-9.**Docker Container Access**
-if the conter image is not built then, 
-   
-    docker build -t gacha .
-    
-After building the Docker image, ensure that the container is run on port 8000 using this command:
+## **Installation with Docker**
 
-    docker run -p 8000:8000 gacha
+1. **Build the Docker image:**
 
-## Usage
+   ```bash
+   docker build -t gacha-game .
 
-1. Register a new user: Navigate to the /register/ page to create a new account.
-2. Log in: Use your credentials to log in to the application at the /login/ page.
-3. Spin for ducks: After logging in, go to your profile at /profile/ and click on the "Spin for a Duck!" button to receive a random duck.
-4. View your ducks: Your collected ducks will be displayed on your profile page.
+2. **Run the container:**
 
-## Admin Panel
+   ```bash
+   docker run -p 8000:8000 gacha-game
+
+8. **Access the application:**
+Open your web browser and navigate to http://127.0.0.1:8000/login
+
+## **Usage**
+
+1. **Register a new account:** Go to /register/ to sign up.
+2. **Log in:** Use your credentials at /login/.
+3. **Spin for ducks:** After logging in, visit /profile/ and click "Spin for a Duck!" to collect a random duck.
+4. **View your collection:** Your ducks will be displayed on the profile page.
+
+## **Admin Panel**
 
 To manage ducks and view users:
 
-1. Go to http://127.0.0.1:8000/admin/.
-2. Log in using the superuser credentials created earlier.
-3. Manage Duck and UserDuck entries through the admin interface.
+1. Visit http://127.0.0.1:8000/admin/.
+2. Log in with the superuser credentials created earlier.
+3. Use the admin interface to manage ducks and user data.
 
-## Images
+## **Images**
 
-To add images for ducks, place them in the media/ducks/ directory (or the directory specified in your models.py).
+Duck images should be added to the media/ducks/ directory (or as specified in your models.py).
+Ensure the MEDIA_URL and MEDIA_ROOT settings in settings.py are properly configured.
