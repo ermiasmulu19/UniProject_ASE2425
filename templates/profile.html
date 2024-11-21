@@ -7,7 +7,6 @@
 
 <body>
     <h2>Welcome, {{ user.username }}!</h2>
-
     <h1>Your Ducks</h1>
     <ul>
         {% for duck in ducks %}
@@ -17,7 +16,7 @@
             <img src="{{ duck.image.url }}" alt="{{ duck.name }}" style="width: 100px; height: auto;">
         </li>
         {% empty %}
-        <li>You currently have no ducks.</li>
+        <li>You don’t have any ducks yet.</li>
         {% endfor %}
     </ul>
 

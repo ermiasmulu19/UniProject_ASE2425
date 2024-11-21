@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Регистрация</title>
+    <title>Registration</title>
 </head>
 <body>
-    <h2>Регистрация</h2>
+    <h2>Registration</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Зарегистрироваться</button>
+        <button type="submit">Register</button>
     </form>
-    <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
+    <p>Already have an account? <a href="{% url 'login' %}">Log In</a></p>
 </body>
 </html>

@@ -1,0 +1,10 @@
+<h1>Roll a Gacha</h1>
+<button id="rollButton">Roll</button>
+<p id="result"></p>
+<script>
+    document.getElementById("rollButton").onclick = function() {
+        fetch("{% url 'roll_gacha' %}", { method: "POST", headers: {'X-CSRFToken': '{{ csrf_token }}' } })
+        .then(response => response.json())
+        .then(data => document.getElementById("result").textContent = data.result);
+    }
+</script>

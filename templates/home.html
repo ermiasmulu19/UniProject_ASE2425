@@ -1,0 +1,21 @@
+<h1>Welcome, {{ player.user.username }}</h1>
+<p>Currency: {{ player.currency }}</p>
+
+<h2>Your Gacha Collection</h2>
+<ul>
+    {% for gacha in player.collection.all %}
+    <li>{{ gacha.name }} - {{ gacha.get_rarity_display }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Active Auctions</h2>
+<ul>
+    {% for auction in auctions %}
+    <li>{{ auction.gacha.name }} - Current Bid: {{ auction.current_bid }}</li>
+    <form method="post" action="{% url 'place_bid' auction.id %}">
+        {% csrf_token %}
+        <input type="number" name="bid_amount" placeholder="Your bid amount" required>
+        <button type="submit">Place Bid</button>
+    </form>
+    {% endfor %}
+</ul>
