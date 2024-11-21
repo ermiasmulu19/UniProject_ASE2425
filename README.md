@@ -2,7 +2,7 @@
 
 ## **Description**
 
-Gacha Game is a Django-based web application that provides a gacha-style experience. Users can register, log in, and spin to collect virtual ducks with varying rarities. The game allows for collecting, managing, and viewing multiple ducks in a fun, randomized manner.
+Gacha Game is a Django-based web application. Users can register, log in, and spin to collect virtual ducks with varying rarities. The game allows for collecting, managing, and viewing multiple ducks in a fun, randomized manner.
 
 ---
 
