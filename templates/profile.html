@@ -10,8 +10,11 @@
     <h1>Your Ducks</h1>
     <ul>
         {% for duck in ducks %}
-        <li>{{ duck.name }} - {{ duck.get_rarity_display }}</li>
-        <img src="{{ duck.image.url }}" alt="{{ duck.name }}">
+        <li>
+            <strong>{{ duck.name }}</strong> - {{ duck.get_rarity_display }}
+            <br>
+            <img src="{{ duck.image.url }}" alt="{{ duck.name }}" style="width: 100px; height: auto;">
+        </li>
         {% empty %}
         <li>You don’t have any ducks yet.</li>
         {% endfor %}
@@ -27,3 +30,4 @@
 </body>
 
 </html>
+    

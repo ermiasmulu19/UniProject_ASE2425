@@ -2,7 +2,10 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from api import views
-from api.views import place_bid, register, roll_gacha, user_delete, user_login, user_logout, profile, modify_user, DuckViewSet, AuctionViewSet, spin_duck  # Импортируйте необходимые классы
+from api.views import place_bid, register, roll_gacha, user_delete, user_login, user_logout, profile, modify_user, DuckViewSet, AuctionViewSet, spin_duck
+
+from django.conf import settings
+from django.conf.urls.static import static
 
 router = DefaultRouter()
 router.register(r'ducks', DuckViewSet)
@@ -22,3 +25,7 @@ urlpatterns = [
     path('user/modify/', modify_user, name='userModify'),
     path('bid/<int:auction_id>/', place_bid, name='place_bid')
 ]
+
+# Serve media files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

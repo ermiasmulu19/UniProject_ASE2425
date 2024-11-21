@@ -9,8 +9,14 @@ from .serializers import DuckSerializer, AuctionSerializer
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
+
 from django.views.decorators.http import require_http_methods  # Ensure this line is present
 from rest_framework.decorators import api_view
+
+from django.contrib.auth.decorators import login_required
+from datetime import timedelta
+from django.utils.timezone import now
+
 
 
 class DuckViewSet(viewsets.ModelViewSet):
@@ -56,6 +62,7 @@ def user_logout(request):
     logout(request)
     return redirect('login')  
     
+@login_required
 def profile(request):
    
     auctions = Auction.objects.filter(owner=request.user)
@@ -122,9 +129,19 @@ def spin_duck(request):
         for duck in ducks:
             weighted_ducks.extend([duck] * rarity_weights[duck.rarity])
 
-        # Выбираем случайную уточку
+        # Randomly select a duck
         selected_duck = random.choice(weighted_ducks)
 
+        # Create an Auction record to represent ownership
+        auction = Auction.objects.create(
+            duck=selected_duck,
+            starting_price=0.00,  # Initial price if auctioned later
+            current_price=0.00,
+            end_time=now() + timedelta(days=7),  # Example: 7-day auction
+            owner=request.user  # Assign the duck to the current user
+        )
+
+        # Render the result page
         return render(request, 'spin_result.html', {'duck': selected_duck})
 
     return render(request, 'spin.html')
