@@ -1,4 +1,4 @@
-# **Gacha Game**
+# **🦆 Gacha Game 🦆**
 
 ## **Description**
 
