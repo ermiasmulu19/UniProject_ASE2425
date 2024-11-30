@@ -21,3 +21,8 @@ venv/
 
 # MacOS
 .DS_Store
+
+# SQLITE
+db.sqlite3
+
+
