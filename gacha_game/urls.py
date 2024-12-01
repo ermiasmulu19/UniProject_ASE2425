@@ -23,7 +23,8 @@ urlpatterns = [
     path('spin/', spin_duck, name='spin'),  
     path('user/delete', user_delete, name='delete_user'),
     path('user/modify/', modify_user, name='userModify'),
-    path('bid/<int:auction_id>/', place_bid, name='place_bid')
+    path('bid/<int:auction_id>/', place_bid, name='place_bid'),
+    path('duck/<int:duck_id>/', views.duck_detail, name='duck_detail'),
 ]
 
 # Serve media files during development

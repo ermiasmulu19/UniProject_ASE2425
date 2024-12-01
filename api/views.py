@@ -16,21 +16,40 @@ from rest_framework.decorators import api_view
 from django.contrib.auth.decorators import login_required
 from datetime import timedelta
 from django.utils.timezone import now
-
+from django.shortcuts import render, get_object_or_404
 
 
 class DuckViewSet(viewsets.ModelViewSet):
     queryset = Duck.objects.all()
     serializer_class = DuckSerializer
 
+def duck_detail(request, duck_id):
+    duck = get_object_or_404(Duck, id=duck_id)
+    return render(request, 'duck_detail.html', {'duck': duck})
+
 class AuctionViewSet(viewsets.ModelViewSet):
     queryset = Auction.objects.all()
     serializer_class = AuctionSerializer
 
+@login_required
 def home(request):
-    player = Player.objects.get(user=request.user)
-    active_auctions = Auction.objects.filter(end_time__gt=timezone.now())
-    return render(request, 'home.html', {'player': player, 'auctions': active_auctions})
+    if not request.user.is_authenticated:
+        return redirect('login')  
+
+    # Fetch auctions and ducks
+    auctions = Auction.objects.filter(owner=request.user)
+    ducks = Duck.objects.filter(auction__in=auctions).distinct()
+
+    # Pass the data to the template
+    context = {
+        'user': request.user,
+        'ducks': ducks,  # Pass ducks to the template
+        'auctions': auctions,
+    }
+    return render(request, 'home.html', context)
+
+
+
 
 def register(request):
     if request.method == 'POST':

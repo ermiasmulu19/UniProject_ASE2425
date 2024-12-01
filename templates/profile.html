@@ -1,33 +1,14 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>User Profile</title>
-</head>
-
-<body>
-    <h2>Welcome, {{ user.username }}!</h2>
-    <h1>Your Ducks</h1>
-    <ul>
-        {% for duck in ducks %}
-        <li>
+<h1>Your Ducks</h1>
+<ul>
+    {% for duck in ducks %}
+    <li>
+        <a href="{% url 'duck_detail' duck.id %}">
             <strong>{{ duck.name }}</strong> - {{ duck.get_rarity_display }}
-            <br>
-            <img src="{{ duck.image.url }}" alt="{{ duck.name }}" style="width: 100px; height: auto;">
-        </li>
-        {% empty %}
-        <li>You don’t have any ducks yet.</li>
-        {% endfor %}
-    </ul>
-
-    <h2>Spin for a Duck</h2>
-    <form method="post" action="{% url 'spin' %}">
-        {% csrf_token %}
-        <button type="submit">Spin for a Duck!</button>
-    </form>
-
-    <a href="{% url 'logout' %}">Log Out</a>
-</body>
-
-</html>
-    
+        </a>
+        <br>
+        <img src="{{ duck.image.url }}" alt="{{ duck.name }}" style="width: 100px; height: auto;">
+    </li>
+    {% empty %}
+    <li>You don’t have any ducks yet.</li>
+    {% endfor %}
+</ul>
