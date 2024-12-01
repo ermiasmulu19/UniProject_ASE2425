@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from users.views import modify_user, user_delete_api,register_api,login_api
 
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/modify/', modify_user, name='userModify'),
