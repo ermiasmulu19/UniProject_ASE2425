@@ -3,19 +3,27 @@
 
 <h2>Your Gacha Collection</h2>
 <ul>
-    {% for gacha in player.collection.all %}
-    <li>{{ gacha.name }} - {{ gacha.get_rarity_display }}</li>
+    {% for duck in ducks %}
+    <li>
+        <a href="{% url 'duck_detail' duck.id %}">
+            {{ duck.name }} - {{ duck.get_rarity_display }}
+        </a>
+    </li>
+    {% empty %}
+    <li>You don’t have any ducks in your collection yet.</li>
     {% endfor %}
 </ul>
 
 <h2>Active Auctions</h2>
 <ul>
     {% for auction in auctions %}
-    <li>{{ auction.gacha.name }} - Current Bid: {{ auction.current_bid }}</li>
-    <form method="post" action="{% url 'place_bid' auction.id %}">
-        {% csrf_token %}
-        <input type="number" name="bid_amount" placeholder="Your bid amount" required>
-        <button type="submit">Place Bid</button>
-    </form>
+    <li>
+        {{ auction.gacha.name }} - Current Bid: {{ auction.current_bid }}
+        <form method="post" action="{% url 'place_bid' auction.id %}">
+            {% csrf_token %}
+            <input type="number" name="bid_amount" placeholder="Your bid amount" required>
+            <button type="submit">Place Bid</button>
+        </form>
+    </li>
     {% endfor %}
 </ul>
