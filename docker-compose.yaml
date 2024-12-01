@@ -1,28 +1,88 @@
 version: '3.8'
 
 services:
-  web:
+  auctionservice:
     build:
-      context: .
-      dockerfile: Dockerfile 
-    volumes:
-      - .:/gacha  
+      context: ./auctionservice
+      dockerfile: Dockerfile
+    container_name: auctionservice
     ports:
-      - "8000:8000"  
-    environment:
-      - PYTHONDONTWRITEBYTECODE=1  
-      - PYTHONUNBUFFERED=1
+      - "8001:8000" # Exposing the service on port 8001
+    volumes:
+      - ./auctionservice:/auctionService
     depends_on:
-      - db 
+      - db
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=auctionservice_db
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+
+  duckservice:
+    build:
+      context: ./duckservice
+      dockerfile: Dockerfile
+    container_name: duckservice
+    ports:
+      - "8002:8000" # Exposing the service on port 8002
+    volumes:
+      - ./duckservice:/duckService
+    depends_on:
+      - db
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=duckservice_db
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+
+  playerservice:
+    build:
+      context: ./playerservice
+      dockerfile: Dockerfile
+    container_name: playerservice
+    ports:
+      - "8003:8000" # Exposing the service on port 8003
+    volumes:
+      - ./playerservice:/playerService
+    depends_on:
+      - db
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=playerservice_db
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+
+  userservice:
+    build:
+      context: ./userservice
+      dockerfile: Dockerfile
+    container_name: userservice
+    ports:
+      - "8004:8000" # Exposing the service on port 8004
+    volumes:
+      - ./userservice:/userService
+    depends_on:
+      - db
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=userservice_db
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
 
   db:
-    image: postgres:13  
-    volumes:
-      - postgres_data:/var/lib/postgresql/data  
+    image: postgres:13
+    container_name: postgres_db
+    ports:
+      - "5432:5432"
     environment:
-      POSTGRES_USER: example_user
-      POSTGRES_PASSWORD: example_password
-      POSTGRES_DB: example_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:  
+  postgres_data:
