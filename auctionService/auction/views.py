@@ -4,8 +4,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Duck, Auction, Player
 
+from .models import Auction
+
+from .models import Player
 
 @api_view(['POST'])
 def place_bid_api(request, auction_id):

@@ -8,7 +8,7 @@ from django.contrib.auth import logout
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
 
-from api.models import Player
+from .models import Player
 
 @api_view(['POST'])
 def register_api(request):

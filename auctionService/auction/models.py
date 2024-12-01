@@ -1,10 +1,6 @@
-from datetime import timezone
 from django.db import models
-
-from duckService.duck.models import Duck
-from playerService.player.models import Player
 from django.contrib.auth.models import User
-
+from django.utils import timezone
 def get_default_seller():
     try:
         user = User.objects.get(username='default_user')
@@ -12,6 +8,29 @@ def get_default_seller():
         user = User.objects.create(username='default_user')
     player, created = Player.objects.get_or_create(user=user)
     return player.id
+
+class Player(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    currency = models.DecimalField(max_digits=10, decimal_places=2, default=1000.00)
+
+    def __str__(self):
+        return self.user.username
+class Duck(models.Model):
+    RARITY_CHOICES = [
+        ('C', 'Common'),
+        ('R', 'Rare'),
+        ('SR', 'SuperRare'),
+        ('UR', 'UltraRare'),
+        ('SUR', 'SuperUltraRare'),
+    ]
+
+    name = models.CharField(max_length=100)
+    rarity = models.CharField(max_length=3, choices=RARITY_CHOICES)
+    profession = models.CharField(max_length=100) 
+    image = models.ImageField(upload_to='ducks/', null=True, blank=True)  
+
+    def __str__(self):
+        return f"{self.name} - {self.get_rarity_display()}"
 
 class Auction(models.Model):
     duck = models.ForeignKey(Duck, on_delete=models.CASCADE)

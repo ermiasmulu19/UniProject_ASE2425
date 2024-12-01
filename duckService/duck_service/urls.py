@@ -16,7 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from duck import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('spin/', views.spin_duck_api, name='spin'),  
+    path('roll/', views.roll_gacha_api, name='roll_gacha'),
 ]

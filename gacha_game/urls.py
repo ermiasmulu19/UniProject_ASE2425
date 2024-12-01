@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from api import views
-from api.views import register_api,login_api,user_delete_api,spin_duck_api,place_bid_api,roll_gacha_api,user_logout, profile,modify_user
+# from api.views import register_api,login_api,user_delete_api,spin_duck_api,place_bid_api,roll_gacha_api,user_logout, profile,modify_user
 
 from django.conf import settings
 from django.conf.urls.static import static

@@ -17,6 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from auction.views import place_bid_api
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('bid/<int:auction_id>/', place_bid_api, name='place_bid')
 ]
