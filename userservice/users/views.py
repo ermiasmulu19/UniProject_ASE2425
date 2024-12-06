@@ -7,8 +7,11 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import logout
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
+from django.views.decorators.csrf import csrf_exempt
+from api.permission import IsAdmin
+from userservice.users.serializers import DuckSerializer
 
-from .models import Player
+from .models import Duck, Player
 
 @api_view(['POST'])
 def register_api(request):
@@ -94,4 +97,63 @@ def modify_user(request):
 
     user.save()
 
-    return Response({"message": "User updated successfully", "username": user.username, "email": user.email}, status=status.HTTP_200_OK)  
+    return Response({"message": "User updated successfully", "username": user.username, "email": user.email}, status=status.HTTP_200_OK) 
+
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAdmin])
+def create_gacha(request):
+    """
+    API endpoint to create a new gacha.
+    """
+    serializer = DuckSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'success': 'Gacha created successfully!', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@csrf_exempt
+@api_view(['PUT'])
+@permission_classes([IsAdmin])
+def update_gacha(request, gacha_id):
+    """
+    API endpoint to update an existing gacha.
+    """
+    try:
+        gacha = Duck.objects.get(id=gacha_id)
+        serializer = DuckSerializer(gacha, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'success': 'Gacha updated successfully!', 'data': serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Duck.DoesNotExist:
+        return Response({'error': 'Gacha not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@csrf_exempt
+@api_view(['DELETE'])
+@permission_classes([IsAdmin])
+def delete_gacha(request, gacha_id):
+    """
+    API endpoint to delete a gacha.
+    """
+    try:
+        gacha = Duck.objects.get(id=gacha_id)
+        gacha.delete()
+        return Response({'success': 'Gacha deleted successfully!'}, status=status.HTTP_200_OK)
+    except Duck.DoesNotExist:
+        return Response({'error': 'Gacha not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([ IsAdmin])
+def admin_view_all_gachas(request):
+    """
+    API endpoint to retrieve all gachas in the system.
+    """
+    gachas = Duck.objects.all()
+    serializer = DuckSerializer(gachas, many=True)
+    return Response({'gachas': serializer.data}, status=status.HTTP_200_OK)
+
+
+ 

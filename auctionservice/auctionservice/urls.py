@@ -18,9 +18,9 @@ from django.contrib import admin
 from django.urls import path
 
 
-from auction.views import place_bid_api
+from auction.views import  secure_place_bid_api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('bid/<int:auction_id>/', place_bid_api, name='place_bid')
+    path('secure-bid/<int:auction_id>/', secure_place_bid_api, name='secure_place_bid'),
 ]

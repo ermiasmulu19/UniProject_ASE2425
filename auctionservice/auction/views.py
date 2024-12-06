@@ -9,21 +9,23 @@ from .models import Auction
 
 from .models import Player
 
-@api_view(['POST'])
-def place_bid_api(request, auction_id):
+def secure_place_bid_api(request, auction_id):
     """
-    API endpoint to place a bid on an auction.
+    Secure API endpoint to place a bid on an auction.
     """
-    if not request.user.is_authenticated:
-        return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
-
     try:
         auction = Auction.objects.get(id=auction_id)
+        if not auction.is_active():
+            return Response({'error': 'Auction has expired'}, status=status.HTTP_400_BAD_REQUEST)
+
         player = Player.objects.get(user=request.user)
         bid_amount = float(request.data.get('bid_amount', 0))
 
-        if bid_amount <= auction.current_price or player.currency < bid_amount:
-            return Response({'error': 'Invalid bid'}, status=status.HTTP_400_BAD_REQUEST)
+        if bid_amount <= auction.current_price:
+            return Response({'error': 'Bid amount must be greater than the current price'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if player.currency < bid_amount:
+            return Response({'error': 'Insufficient currency'}, status=status.HTTP_400_BAD_REQUEST)
 
         auction.current_price = bid_amount
         auction.highest_bidder = player

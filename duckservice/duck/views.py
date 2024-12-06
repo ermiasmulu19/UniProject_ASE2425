@@ -4,13 +4,51 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 
+from duckservice.duck.serializers import DuckSerializer
+
 # from api.serializers import DuckSerializer
 from .models import Duck, Auction, Player
 from datetime import timedelta
 import random
+from rest_framework.permissions import AllowAny
 
 
 import random
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def system_gacha_info(request, gacha_id):
+    """
+    API endpoint to retrieve detailed info of a system gacha.
+    """
+    try:
+        duck = Duck.objects.get(id=gacha_id)
+        return Response(DuckSerializer(duck).data, status=status.HTTP_200_OK)
+    except Duck.DoesNotExist:
+        return Response({'error': 'Gacha not found in the system'}, status=status.HTTP_404_NOT_FOUND)
+    
+    
+def gacha_info(request, gacha_id):
+    """
+    API endpoint to retrieve detailed info of a gacha owned by the player.
+    """
+    try:
+        duck = Duck.objects.get(id=gacha_id)
+        return Response(DuckSerializer(duck).data, status=status.HTTP_200_OK)
+    except Duck.DoesNotExist:
+        return Response({'error': 'Gacha not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def system_gacha_collection(request):
+    """
+    API endpoint to retrieve the system-wide gacha collection.
+    """
+    ducks = Duck.objects.all()
+    ducks_data = DuckSerializer(ducks, many=True).data
+
+    return Response({"system_gacha_collection": ducks_data}, status=status.HTTP_200_OK)
+
 
 @api_view(['POST'])
 def spin_duck_api(request):

@@ -1,6 +1,8 @@
 import sys
 
-
+from playerservice.player.serializers import AuctionSerializer, DuckSerializer
+from rest_framework.permissions import IsAuthenticated
+from decimal import Decimal
 from .models import Player,Duck
 
 # from api.models import Player
@@ -81,3 +83,64 @@ def profile(request):
         "user": request.user.username,
         "ducks": ducks_data
     }, status=200)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def transaction_history(request):
+    """
+    API endpoint to view the player's transaction history.
+    """
+    try:
+        player = Player.objects.get(user=request.user)
+        bids = Auction.objects.filter(highest_bidder=player)
+        auctions = Auction.objects.filter(seller=player)
+
+        bid_data = AuctionSerializer(bids, many=True).data
+        auction_data = AuctionSerializer(auctions, many=True).data
+
+        return Response({
+            "player": player.user.username,
+            "bids": bid_data,
+            "auctions": auction_data,
+        }, status=status.HTTP_200_OK)
+    except Player.DoesNotExist:
+        return Response({'error': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def buy_currency(request):
+    """
+    API endpoint to buy in-game currency.
+    """
+    amount = request.data.get('amount')
+    if not amount or float(amount) <= 0:
+        return Response({'error': 'Invalid amount'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        player = Player.objects.get(user=request.user)
+        player.currency += Decimal(amount)
+        player.save()
+
+        return Response({'success': 'Currency purchased successfully', 'new_balance': player.currency}, status=status.HTTP_200_OK)
+    except Player.DoesNotExist:
+        return Response({'error': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_gacha_collection(request):
+    """
+    API endpoint to retrieve the player's gacha collection.
+    """
+    try:
+        player = Player.objects.get(user=request.user)
+        my_ducks = Duck.objects.filter(auction__seller=player).distinct()
+        ducks_data = DuckSerializer(my_ducks, many=True).data
+
+        return Response({
+            "player": player.user.username,
+            "gacha_collection": ducks_data,
+        }, status=status.HTTP_200_OK)
+    except Player.DoesNotExist:
+        return Response({'error': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)

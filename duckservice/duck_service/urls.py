@@ -23,4 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('spin/', views.spin_duck_api, name='spin'),  
     path('roll/', views.roll_gacha_api, name='roll_gacha'),
+    path('system-gacha-info/<int:gacha_id>/', views.system_gacha_info, name='system_gacha_info'),
+     path('gacha-info/<int:gacha_id>/', views.gacha_info, name='gacha_info'),
+     path('system-collection/', views.system_gacha_collection, name='system_gacha_collection'),
 ]

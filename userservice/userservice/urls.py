@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from users.views import modify_user, user_delete_api,register_api,login_api
+from users.views import admin_view_all_gachas, create_gacha, delete_gacha, modify_user, update_gacha, user_delete_api,register_api,login_api
 
 
 
@@ -26,4 +26,9 @@ urlpatterns = [
     path('user/delete', user_delete_api, name='delete_user'),
     path('register/', register_api, name='register'),
     path('login/', login_api, name='login'),
+    # admin gacha managment 
+    path('manag/duck/create/', create_gacha, name='create_gacha'),
+    path('manag/duck/<int:gacha_id>/update/', update_gacha, name='update_gacha'),
+    path('manag/duck/<int:gacha_id>/delete/', delete_gacha, name='delete_gacha'),
+    path('manag/duck/all/', admin_view_all_gachas, name='admin_view_all_gachas'),
 ]

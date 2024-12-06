@@ -16,9 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from player.views import profile
+from player.views import buy_currency, home_api, my_gacha_collection, profile, transaction_history
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+     path('home/', home_api, name='home'),
     path('profile/', profile, name='profile'),
+    path('transactions/', transaction_history, name='transaction_history'),
+    path('buy_currency/', buy_currency, name='buy_currency'),
+     path('my-collection/', my_gacha_collection, name='my_gacha_collection'),
 ]
