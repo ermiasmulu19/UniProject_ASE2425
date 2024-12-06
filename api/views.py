@@ -1,12 +1,15 @@
+from decimal import Decimal
 from django.utils import timezone
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-
-from api.serializers import DuckSerializer
+from rest_framework.authentication import TokenAuthentication
+from api.permission import IsAdmin
+from api.serializers import AuctionSerializer, DuckSerializer
 from .models import Duck, Auction, Player
 from datetime import timedelta
+
 import random
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
@@ -14,19 +17,35 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import logout
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
+from django.views.decorators.csrf import csrf_exempt
+
+
+from django.utils.timezone import now
+from django.shortcuts import render, get_object_or_404
 
 
 
 
-@api_view(['GET'])
-def home_api(request):
-    """
-    API endpoint to retrieve active auctions and the player's details.
-    """
-    print(f"Request User: {request.user}")
 
+
+@login_required
+def home(request):
     if not request.user.is_authenticated:
-        return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+        return redirect('login')  
+
+    # Fetch auctions and ducks
+    auctions = Auction.objects.filter(owner=request.user)
+    ducks = Duck.objects.filter(auction__in=auctions).distinct()
+
+    # Pass the data to the template
+    context = {
+        'user': request.user,
+        'ducks': ducks,  # Pass ducks to the template
+        'auctions': auctions,
+    }
+    return render(request, 'home.html', context)
+
+
 
     try:
         
@@ -207,21 +226,26 @@ def spin_duck_api(request):
         }
     }, status=status.HTTP_200_OK)
 
+# new version of place bild api its somehow SECURED
 @api_view(['POST'])
-def place_bid_api(request, auction_id):
+@permission_classes([IsAuthenticated])
+def secure_place_bid_api(request, auction_id):
     """
-    API endpoint to place a bid on an auction.
+    Secure API endpoint to place a bid on an auction.
     """
-    if not request.user.is_authenticated:
-        return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
-
     try:
         auction = Auction.objects.get(id=auction_id)
+        if not auction.is_active():
+            return Response({'error': 'Auction has expired'}, status=status.HTTP_400_BAD_REQUEST)
+
         player = Player.objects.get(user=request.user)
         bid_amount = float(request.data.get('bid_amount', 0))
 
-        if bid_amount <= auction.current_price or player.currency < bid_amount:
-            return Response({'error': 'Invalid bid'}, status=status.HTTP_400_BAD_REQUEST)
+        if bid_amount <= auction.current_price:
+            return Response({'error': 'Bid amount must be greater than the current price'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if player.currency < bid_amount:
+            return Response({'error': 'Insufficient currency'}, status=status.HTTP_400_BAD_REQUEST)
 
         auction.current_price = bid_amount
         auction.highest_bidder = player
@@ -232,6 +256,34 @@ def place_bid_api(request, auction_id):
         return Response({'error': 'Auction not found'}, status=status.HTTP_404_NOT_FOUND)
     except Player.DoesNotExist:
         return Response({'error': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+# @api_view(['POST'])
+# def place_bid_api(request, auction_id):
+#     """
+#     API endpoint to place a bid on an auction.
+#     """
+#     if not request.user.is_authenticated:
+#         return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
+#     try:
+#         auction = Auction.objects.get(id=auction_id)
+#         player = Player.objects.get(user=request.user)
+#         bid_amount = float(request.data.get('bid_amount', 0))
+
+#         if bid_amount <= auction.current_price or player.currency < bid_amount:
+#             return Response({'error': 'Invalid bid'}, status=status.HTTP_400_BAD_REQUEST)
+
+#         auction.current_price = bid_amount
+#         auction.highest_bidder = player
+#         auction.save()
+
+#         return Response({'success': 'Bid placed successfully!', 'current_price': auction.current_price}, status=status.HTTP_200_OK)
+#     except Auction.DoesNotExist:
+#         return Response({'error': 'Auction not found'}, status=status.HTTP_404_NOT_FOUND)
+#     except Player.DoesNotExist:
+#         return Response({'error': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
 def roll_gacha_api(request):
@@ -292,3 +344,194 @@ def roll_gacha_api(request):
     except Player.DoesNotExist:
         return Response({'error': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
 
+# ############################### the view api view endpoints ######################################
+
+# 1. View Gacha Collection
+
+# Feature: See the player's gacha collection.
+# Goal: Let the user know how many gacha they have collected and how many remain.
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_gacha_collection(request):
+    """
+    API endpoint to retrieve the player's gacha collection.
+    """
+    try:
+        player = Player.objects.get(user=request.user)
+        my_ducks = Duck.objects.filter(auction__seller=player).distinct()
+        ducks_data = DuckSerializer(my_ducks, many=True).data
+
+        return Response({
+            "player": player.user.username,
+            "gacha_collection": ducks_data,
+        }, status=status.HTTP_200_OK)
+    except Player.DoesNotExist:
+        return Response({'error': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
+
+# Feature: View details about a gacha the player owns.
+# Goal: Provide full information about a specific gacha from the player’s collection.
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def gacha_info(request, gacha_id):
+    """
+    API endpoint to retrieve detailed info of a gacha owned by the player.
+    """
+    try:
+        duck = Duck.objects.get(id=gacha_id)
+        return Response(DuckSerializer(duck).data, status=status.HTTP_200_OK)
+    except Duck.DoesNotExist:
+        return Response({'error': 'Gacha not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+# 3. View System Gacha Collection
+
+# Feature: View all gacha in the system.
+# Goal: Allow users to see what is missing from their collection.
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def system_gacha_collection(request):
+    """
+    API endpoint to retrieve the system-wide gacha collection.
+    """
+    ducks = Duck.objects.all()
+    ducks_data = DuckSerializer(ducks, many=True).data
+
+    return Response({"system_gacha_collection": ducks_data}, status=status.HTTP_200_OK)
+
+# 4. View System Gacha Info
+
+# Feature: View details of a specific gacha available in the system.
+# Goal: Provide full information about any gacha available in the game.
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def system_gacha_info(request, gacha_id):
+    """
+    API endpoint to retrieve detailed info of a system gacha.
+    """
+    try:
+        duck = Duck.objects.get(id=gacha_id)
+        return Response(DuckSerializer(duck).data, status=status.HTTP_200_OK)
+    except Duck.DoesNotExist:
+        return Response({'error': 'Gacha not found in the system'}, status=status.HTTP_404_NOT_FOUND)
+    
+    
+    
+# 5. Buy In-Game Currency
+
+# Feature: Enable players to buy in-game currency.
+# Goal: Let users purchase currency for transactions.    
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def buy_currency(request):
+    """
+    API endpoint to buy in-game currency.
+    """
+    amount = request.data.get('amount')
+    if not amount or float(amount) <= 0:
+        return Response({'error': 'Invalid amount'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        player = Player.objects.get(user=request.user)
+        player.currency += Decimal(amount)
+        player.save()
+
+        return Response({'success': 'Currency purchased successfully', 'new_balance': player.currency}, status=status.HTTP_200_OK)
+    except Player.DoesNotExist:
+        return Response({'error': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
+# 6. View Transaction History
+
+# Feature: Let players see their market activity.
+# Goal: Enable users to track their gacha and currency movement.
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def transaction_history(request):
+    """
+    API endpoint to view the player's transaction history.
+    """
+    try:
+        player = Player.objects.get(user=request.user)
+        bids = Auction.objects.filter(highest_bidder=player)
+        auctions = Auction.objects.filter(seller=player)
+
+        bid_data = AuctionSerializer(bids, many=True).data
+        auction_data = AuctionSerializer(auctions, many=True).data
+
+        return Response({
+            "player": player.user.username,
+            "bids": bid_data,
+            "auctions": auction_data,
+        }, status=status.HTTP_200_OK)
+    except Player.DoesNotExist:
+        return Response({'error': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+#############################- Gacha Managment -########################################
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAdmin])
+def create_gacha(request):
+    """
+    API endpoint to create a new gacha.
+    """
+    serializer = DuckSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'success': 'Gacha created successfully!', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@csrf_exempt
+@api_view(['PUT'])
+@permission_classes([IsAdmin])
+def update_gacha(request, gacha_id):
+    """
+    API endpoint to update an existing gacha.
+    """
+    try:
+        gacha = Duck.objects.get(id=gacha_id)
+        serializer = DuckSerializer(gacha, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'success': 'Gacha updated successfully!', 'data': serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Duck.DoesNotExist:
+        return Response({'error': 'Gacha not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@csrf_exempt
+@api_view(['DELETE'])
+@permission_classes([IsAdmin])
+def delete_gacha(request, gacha_id):
+    """
+    API endpoint to delete a gacha.
+    """
+    try:
+        gacha = Duck.objects.get(id=gacha_id)
+        gacha.delete()
+        return Response({'success': 'Gacha deleted successfully!'}, status=status.HTTP_200_OK)
+    except Duck.DoesNotExist:
+        return Response({'error': 'Gacha not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([ IsAdmin])
+def admin_view_all_gachas(request):
+    """
+    API endpoint to retrieve all gachas in the system.
+    """
+    gachas = Duck.objects.all()
+    serializer = DuckSerializer(gachas, many=True)
+    return Response({'gachas': serializer.data}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAdmin])
+def admin_view_all_gachas(request):
+    """
+    API endpoint to retrieve all gachas in the system.
+    """
+    gachas = Duck.objects.all()  
+    serializer = DuckSerializer(gachas, many=True)  
+    return Response({'gachas': serializer.data}, status=status.HTTP_200_OK)
