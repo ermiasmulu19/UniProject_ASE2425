@@ -1,0 +1,72 @@
+name: CI with Docker Compose
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      # Postgres database service
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: gachadb
+          POSTGRES_PASSWORD: gachadb
+          POSTGRES_DB: gacha
+        ports:
+          - 5432:5432
+        # No need to add networks here
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Step 3: Set up Docker Compose
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose
+
+      # Step 4: Build and start services with Docker Compose
+      - name: Build and start containers
+        run: |
+          docker-compose -f docker-compose.yml up -d
+
+      # Step 5: Wait for services to be ready (PostgreSQL, etc.)
+      - name: Wait for services to be ready
+        run: |
+          docker-compose exec -T db bash -c "until pg_isready -U gachadb; do sleep 1; done;"
+
+      # Step 6: Run tests for each service (assumes Django is used)
+      - name: Run Django tests for auctionservice
+        run: |
+          docker-compose exec -T auctionservice bash -c "pytest /auctionservice/tests"
+
+      - name: Run Django tests for duckservice
+        run: |
+          docker-compose exec -T duckservice bash -c "pytest /duckservice/tests"
+
+      - name: Run Django tests for playerservice
+        run: |
+          docker-compose exec -T playerservice bash -c "pytest /playerservice/tests"
+
+      - name: Run Django tests for userservice
+        run: |
+          docker-compose exec -T userservice bash -c "pytest /userservice/tests"
+
+      # Step 7: Shut down the containers after tests
+      - name: Shut down services
+        run: |
+          docker-compose down
