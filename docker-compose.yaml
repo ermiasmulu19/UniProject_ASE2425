@@ -1,23 +1,40 @@
 version: '3.8'
 
 services:
+  db:
+    image: postgres:14  
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DB_HOST}
+      
+    ports:
+      - ${DB_PORT}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - django-network
+
   auctionservice:
     build:
       context: ./auctionservice
       dockerfile: Dockerfile
     container_name: auctionservice
     ports:
-      - "8001:8000" # Exposing the service on port 8001
+      - "8001:8000"
     volumes:
-      - ./auctionservice:/auctionService
+      - ./auctionservice:/auctionservice
     depends_on:
-      - db
+      - ${DB_HOST}
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      - DATABASE_NAME=auctionservice_db
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=postgres
+      DATABASE_HOST: ${DB_HOST}
+      DATABASE_PORT: ${DB_PORT}
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - django-network
 
   duckservice:
     build:
@@ -25,17 +42,19 @@ services:
       dockerfile: Dockerfile
     container_name: duckservice
     ports:
-      - "8002:8000" # Exposing the service on port 8002
+      - "8002:8000"
     volumes:
-      - ./duckservice:/duckService
+      - ./duckservice:/duckservice
     depends_on:
-      - db
+      - ${DB_HOST}
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      - DATABASE_NAME=duckservice_db
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=postgres
+      DATABASE_HOST: ${DB_HOST}
+      DATABASE_PORT: ${DB_PORT}
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - django-network
 
   playerservice:
     build:
@@ -43,17 +62,19 @@ services:
       dockerfile: Dockerfile
     container_name: playerservice
     ports:
-      - "8003:8000" # Exposing the service on port 8003
+      - "8003:8000"
     volumes:
-      - ./playerservice:/playerService
+      - ./playerservice:/playerservice
     depends_on:
-      - db
+      - ${DB_HOST}
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      - DATABASE_NAME=playerservice_db
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=postgres
+      DATABASE_HOST: ${DB_HOST}
+      DATABASE_PORT: ${DB_PORT}
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - django-network
 
   userservice:
     build:
@@ -61,28 +82,22 @@ services:
       dockerfile: Dockerfile
     container_name: userservice
     ports:
-      - "8004:8000" # Exposing the service on port 8004
+      - "8004:8000"
     volumes:
-      - ./userservice:/userService
+      - ./userservice:/userservice
     depends_on:
-      - db
+      - ${DB_HOST}
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      - DATABASE_NAME=userservice_db
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=postgres
-
-  db:
-    image: postgres:13
-    container_name: postgres_db
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      DATABASE_HOST: ${DB_HOST}
+      DATABASE_PORT: ${DB_PORT}
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - django-network
 
 volumes:
-  postgres_data:
+  db_data:
+
+networks:
+  django-network:
