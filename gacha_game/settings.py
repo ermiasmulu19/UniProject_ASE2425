@@ -62,6 +62,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+
 ROOT_URLCONF = "gacha_game.urls"
 
 TEMPLATES = [
