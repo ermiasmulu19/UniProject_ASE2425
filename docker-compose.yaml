@@ -1,28 +1,97 @@
 version: '3.8'
 
 services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile 
-    volumes:
-      - .:/gacha  
-    ports:
-      - "8000:8000"  
+  db:
+    image: postgres:14  
+    container_name: postgres_container
     environment:
-      - PYTHONDONTWRITEBYTECODE=1  
-      - PYTHONUNBUFFERED=1
+      POSTGRES_USER: gachadb
+      POSTGRES_PASSWORD: gachadb
+      POSTGRES_DB: gacha
+      
+    ports:
+      - ${DB_PORT}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - django-network
+
+  auctionservice:
+    build:
+      context: ./auctionservice
+      dockerfile: Dockerfile
+    container_name: auctionservice
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./auctionservice:/auctionservice
+    depends_on:
+      - db
+    environment:
+      POSTGRES_USER: gachadb
+      POSTGRES_PASSWORD: gachadb
+      POSTGRES_DB: gacha
+    networks:
+      - django-network
+
+  duckservice:
+    build:
+      context: ./duckservice
+      dockerfile: Dockerfile
+    container_name: duckservice
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./duckservice:/duckservice
     depends_on:
       - db 
-
-  db:
-    image: postgres:13  
-    volumes:
-      - postgres_data:/var/lib/postgresql/data  
     environment:
-      POSTGRES_USER: example_user
-      POSTGRES_PASSWORD: example_password
-      POSTGRES_DB: example_db
+     
+      POSTGRES_USER: gachadb
+      POSTGRES_PASSWORD: gachadb
+      POSTGRES_DB: gacha
+    networks:
+      - django-network
+
+  playerservice:
+    build:
+      context: ./playerservice
+      dockerfile: Dockerfile
+    container_name: playerservice
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./playerservice:/playerservice
+    depends_on:
+      - db 
+    environment:
+     
+      POSTGRES_USER: gachadb
+      POSTGRES_PASSWORD: gachadb
+      POSTGRES_DB: gacha
+    networks:
+      - django-network
+
+  userservice:
+    build:
+      context: ./userservice
+      dockerfile: Dockerfile
+    container_name: userservice
+    ports:
+      - "8004:8000"
+    volumes:
+      - ./userservice:/userservice
+    depends_on:
+      - db
+    environment:
+      POSTGRES_USER: gachadb
+      POSTGRES_PASSWORD: gachadb
+      POSTGRES_DB: gacha
+    networks:
+      - django-network
 
 volumes:
-  postgres_data:  
+  db_data:
+
+networks:
+  django-network:
