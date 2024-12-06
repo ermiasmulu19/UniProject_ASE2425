@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.forms import ValidationError
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 def get_default_seller():
     try:
         user = User.objects.get(username='default_user')
@@ -13,9 +16,17 @@ def get_default_seller():
 class Player(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     currency = models.DecimalField(max_digits=10, decimal_places=2, default=1000.00)
+    collection = models.ManyToManyField('Duck', blank=True)  # Change 'Duck' to your actual duck model name
+
 
     def __str__(self):
         return self.user.username
+    
+    @receiver(post_save, sender=User)
+    def create_player_for_user(sender, instance, created, **kwargs):
+         if created:  # Only create if this is a new User
+            Player.objects.create(user=instance)
+             
 class Duck(models.Model):
     RARITY_CHOICES = [
         ('C', 'Common'),
@@ -32,6 +43,8 @@ class Duck(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.get_rarity_display()}"
+    
+
 
 class Auction(models.Model):
     duck = models.ForeignKey(Duck, on_delete=models.CASCADE)

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ duck.name }} Details</title>
+</head>
+<body>
+    <h1>{{ duck.name }}</h1>
+    <p>Rarity: {{ duck.get_rarity_display }}</p>
+    <p>Profession: {{ duck.profession }}</p>
+    <img src="{{ duck.image.url }}" alt="{{ duck.name }}" style="width: 300px; height: auto;">
+    
+    <a href="{% url 'home' %}">Back to Home</a>
+</body>
+</html>

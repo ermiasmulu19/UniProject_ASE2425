@@ -24,6 +24,7 @@ urlpatterns = [
     path('spin/', spin_duck_api, name='spin'),  
     path('user/delete/', user_delete_api, name='delete_user'),
     path('user/modify/', modify_user, name='userModify'),
+
     # path('bid/<int:auction_id>/', place_bid_api, name='place_bid'),
     path('my-collection/', my_gacha_collection, name='my_gacha_collection'),
     path('gacha-info/<int:gacha_id>/', gacha_info, name='gacha_info'),
@@ -37,6 +38,7 @@ urlpatterns = [
     path('manag/duck/<int:gacha_id>/delete/', delete_gacha, name='delete_gacha'),
     path('manag/duck/all/', admin_view_all_gachas, name='admin_view_all_gachas'),
     # path('admin/logout/', admin_logout, name='admin_logout'),
+
 ]
 
 

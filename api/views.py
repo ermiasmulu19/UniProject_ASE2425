@@ -9,6 +9,7 @@ from api.permission import IsAdmin
 from api.serializers import AuctionSerializer, DuckSerializer
 from .models import Duck, Auction, Player
 from datetime import timedelta
+
 import random
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
@@ -19,17 +20,32 @@ from rest_framework.permissions import AllowAny
 from django.views.decorators.csrf import csrf_exempt
 
 
+from django.utils.timezone import now
+from django.shortcuts import render, get_object_or_404
 
 
-@api_view(['GET'])
-def home_api(request):
-    """
-    API endpoint to retrieve active auctions and the player's details.
-    """
-    print(f"Request User: {request.user}")
 
+
+
+
+@login_required
+def home(request):
     if not request.user.is_authenticated:
-        return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+        return redirect('login')  
+
+    # Fetch auctions and ducks
+    auctions = Auction.objects.filter(owner=request.user)
+    ducks = Duck.objects.filter(auction__in=auctions).distinct()
+
+    # Pass the data to the template
+    context = {
+        'user': request.user,
+        'ducks': ducks,  # Pass ducks to the template
+        'auctions': auctions,
+    }
+    return render(request, 'home.html', context)
+
+
 
     try:
         
