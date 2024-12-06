@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.forms import ValidationError
 from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -56,6 +57,9 @@ class Auction(models.Model):
     
     def is_active(self):
         return self.end_time > timezone.now()
+    def clean(self):
+        if self.end_time <= timezone.now():
+            raise ValidationError("Cannot modify an expired auction.")
 
     def __str__(self):
         return f"Auction for {self.duck.name} by {self.owner.username}"
