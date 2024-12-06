@@ -1,0 +1,408 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Gacha Game API",
+    "description": "API for managing Gacha game functionalities like player registration, gacha rolls, auctions, etc.",
+    "contact": {
+      "name": "Gacha Game Team",
+      "email": "support@gachagame.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://virtserver.swaggerhub.com/ERMIASMULU19/Gacha/1.0.0",
+      "description": "SwaggerHub API Auto Mocking"
+    },
+    {
+      "url": "http://0.0.0.0:8001",
+      "description": "Auction Service (handles auction-related functionalities)"
+    },
+    {
+      "url": "http://0.0.0.0:8002",
+      "description": "Player Service (handles player-related functionalities)"
+    },
+    {
+      "url": "http://0.0.0.0:8003",
+      "description": "User Service (handles user authentication and management)"
+    },
+    {
+      "url": "http://0.0.0.0:8004",
+      "description": "Duck Service (handles gacha-related functionalities)"
+    }
+  ],
+  "paths": {
+    "/spin/": {
+      "post": {
+        "summary": "Spin for a Duck",
+        "description": "Spin the gacha and create an auction for the selected duck.",
+        "responses": {
+          "200": {
+            "description": "Successfully spun the gacha and created an auction."
+          },
+          "401": {
+            "description": "Authentication required."
+          }
+        }
+      }
+    },
+    "/roll/": {
+      "post": {
+        "summary": "Roll Gacha",
+        "description": "Roll the gacha and get a reward based on player currency.",
+        "responses": {
+          "200": {
+            "description": "Successfully rolled the gacha."
+          },
+          "400": {
+            "description": "Not enough currency for the roll."
+          },
+          "401": {
+            "description": "Authentication required."
+          }
+        }
+      }
+    },
+    "/system-gacha-info/{gacha_id}/": {
+      "get": {
+        "summary": "System Gacha Info",
+        "description": "Retrieve detailed information of a system gacha.",
+        "parameters": [
+          {
+            "name": "gacha_id",
+            "in": "path",
+            "description": "The ID of the gacha to retrieve information for.",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved gacha information."
+          },
+          "404": {
+            "description": "Gacha not found."
+          }
+        }
+      }
+    },
+    "/gacha-info/{gacha_id}/": {
+      "get": {
+        "summary": "Gacha Info",
+        "description": "Retrieve detailed information of a gacha owned by the player.",
+        "parameters": [
+          {
+            "name": "gacha_id",
+            "in": "path",
+            "description": "The ID of the gacha to retrieve.",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved player-owned gacha information."
+          },
+          "404": {
+            "description": "Gacha not found."
+          }
+        }
+      }
+    },
+    "/system-collection/": {
+      "get": {
+        "summary": "System Gacha Collection",
+        "description": "Retrieve all system-wide gachas.",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved system-wide gacha collection."
+          }
+        }
+      }
+    },
+    "/home/": {
+      "get": {
+        "summary": "Home API",
+        "description": "Retrieve active auctions and player details.",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved active auctions and player details."
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "404": {
+            "description": "Player not found."
+          }
+        }
+      }
+    },
+    "/profile/": {
+      "get": {
+        "summary": "Player Profile",
+        "description": "Retrieve the player's profile including their ducks and auctions.",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved player profile."
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "404": {
+            "description": "Player not found."
+          }
+        }
+      }
+    },
+    "/transactions/": {
+      "get": {
+        "summary": "Transaction History",
+        "description": "Retrieve the player's transaction history, including bids and auctions.",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved transaction history."
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "404": {
+            "description": "Player not found."
+          }
+        }
+      }
+    },
+    "/buy_currency/": {
+      "post": {
+        "summary": "Buy In-game Currency",
+        "description": "Allows the player to buy in-game currency.",
+        "responses": {
+          "200": {
+            "description": "Currency purchased successfully."
+          },
+          "400": {
+            "description": "Invalid amount or data."
+          },
+          "404": {
+            "description": "Player not found."
+          }
+        }
+      }
+    },
+    "/my-collection/": {
+      "get": {
+        "summary": "Gacha Collection",
+        "description": "Retrieve the player's gacha collection.",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the gacha collection."
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "404": {
+            "description": "Player not found."
+          }
+        }
+      }
+    },
+    "/register/": {
+      "post": {
+        "summary": "User Registration",
+        "description": "Register a new user with a username and password.",
+        "responses": {
+          "201": {
+            "description": "Successfully registered user."
+          },
+          "400": {
+            "description": "Username or password missing or already exists."
+          },
+          "500": {
+            "description": "Server error while registering."
+          }
+        }
+      }
+    },
+    "/login/": {
+      "post": {
+        "summary": "User Login",
+        "description": "Authenticate the user and generate a token.",
+        "responses": {
+          "200": {
+            "description": "Successfully logged in with token."
+          },
+          "401": {
+            "description": "Invalid credentials."
+          }
+        }
+      }
+    },
+    "/logout/": {
+      "post": {
+        "summary": "User Logout",
+        "description": "Logs the user out of the system.",
+        "responses": {
+          "200": {
+            "description": "User logged out successfully."
+          },
+          "401": {
+            "description": "Authentication required."
+          }
+        }
+      }
+    },
+    "/user/modify/": {
+      "put": {
+        "summary": "Modify User",
+        "description": "Modify the user's profile (e.g., username, password).",
+        "responses": {
+          "200": {
+            "description": "Successfully modified user."
+          },
+          "401": {
+            "description": "Authentication required."
+          }
+        }
+      }
+    },
+    "/user/delete/": {
+      "delete": {
+        "summary": "Delete User",
+        "description": "Delete the user's account from the system.",
+        "responses": {
+          "200": {
+            "description": "Successfully deleted user."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      }
+    },
+    "/manag/duck/create/": {
+      "post": {
+        "summary": "Create Gacha",
+        "description": "Admin endpoint to create a new gacha.",
+        "responses": {
+          "201": {
+            "description": "Successfully created gacha."
+          },
+          "400": {
+            "description": "Invalid gacha data."
+          }
+        }
+      }
+    },
+    "/manag/duck/{gacha_id}/update/": {
+      "put": {
+        "summary": "Update Gacha",
+        "description": "Admin endpoint to update an existing gacha.",
+        "parameters": [
+          {
+            "name": "gacha_id",
+            "in": "path",
+            "description": "The ID of the gacha to update.",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated gacha."
+          },
+          "400": {
+            "description": "Invalid gacha data."
+          },
+          "404": {
+            "description": "Gacha not found."
+          }
+        }
+      }
+    },
+    "/manag/duck/{gacha_id}/delete/": {
+      "delete": {
+        "summary": "Delete Gacha",
+        "description": "Admin endpoint to delete a gacha.",
+        "parameters": [
+          {
+            "name": "gacha_id",
+            "in": "path",
+            "description": "The ID of the gacha to delete.",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted gacha."
+          },
+          "404": {
+            "description": "Gacha not found."
+          }
+        }
+      }
+    },
+    "/manag/duck/all/": {
+      "get": {
+        "summary": "View All Gachas",
+        "description": "Admin endpoint to view all gachas.",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved all gachas."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Auction": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "highest_bidder": {
+            "type": "string"
+          },
+          "seller": {
+            "type": "string"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "bid_price": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      }
+    }
+  }
+}

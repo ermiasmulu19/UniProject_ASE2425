@@ -1,0 +1,381 @@
+{
+	"info": {
+		"_postman_id": "c5826b10-1675-476f-90dd-bade328945ae",
+		"name": "Gacha_Crud_OPration",
+		"description": "The **Gacha API** provides a set of endpoints for managing and interacting with a virtual gacha system in a game. The services allow users to interact with gachas (virtual items), spin for new items, roll for rewards, and access detailed information about system-wide and user-specific gachas. Below is an overview of the various services offered by the API:\n\n---\n\n### **1\\. Spin Duck API (****`POST /spin/`****)**\n\nThis endpoint allows authenticated users to \"spin\" for a duck from the available collection in the system. Upon spinning, the system randomly selects a duck based on predefined rarity weights (Common, Rare, Super Rare, Ultra Rare, and Special Ultra Rare). An associated auction is created for the selected duck, which is then assigned to the user. This service helps users acquire new ducks and participate in the auctioning process.\n\n- **Features**:\n    \n    - Randomly selects a duck from the system.\n        \n    - Assigns the selected duck to the user.\n        \n    - Creates an auction for the selected duck, starting with a price of 0.00 and a 7-day auction duration.\n        \n\n---\n\n### **2\\. Roll Gacha API (****`POST /roll/`****)**\n\nThe roll endpoint allows users to \"roll\" for a reward by spending in-game currency. The user must have enough currency (at least 10) to participate in the gacha roll. Based on the probability of rarity, users receive a random duck, which is then assigned to them and placed in an auction. The gacha rewards range from Common to Super Ultra Rare ducks, with different probability rates for each rarity. This service helps users acquire ducks while engaging with the in-game currency system.\n\n- **Features**:\n    \n    - Rolls the gacha based on predefined rarity probabilities.\n        \n    - Decreases the user's currency by 10 upon successful roll.\n        \n    - Returns the acquired duck's details and the auction information.\n        \n    - Ducks range in rarity: Common (C), Rare (R), Super Rare (SR), Ultra Rare (UR), and Special Ultra Rare (SUR).\n        \n\n---\n\n### **3\\. System Gacha Info (****`GET /system-gacha-info//`****)**\n\nThis service allows users to retrieve detailed information about a specific gacha (duck) in the system using its unique ID. The data returned includes the duck's name, rarity, profession, and image. This endpoint is available to everyone, whether authenticated or not, providing transparency into the gacha pool.\n\n- **Features**:\n    \n    - Fetches detailed information about a system-wide gacha by its ID.\n        \n    - Provides the duck's name, rarity, profession, and associated image.\n        \n\n---\n\n### **4\\. Gacha Info (****`GET /gacha-info//`****)**\n\nThe Gacha Info service allows authenticated users to view detailed information about a gacha (duck) that they own. The information includes details similar to the system gacha info, but specifically for ducks owned by the player. This helps users manage and view their owned ducks and their associated auction details.\n\n- **Features**:\n    \n    - Retrieves detailed information about a user's owned duck by its ID.\n        \n    - Returns duck's name, rarity, profession, and image.\n        \n    - Shows details about the associated auction, if applicable.\n        \n\n---\n\n### **5\\. System Gacha Collection (****`GET /system-collection/`****)**\n\nThis service provides users with access to the entire collection of ducks (gachas) available in the system. It is designed to give users an overview of all the ducks in the system, including their names, rarities, and professions. This endpoint allows users to explore the different ducks available for spinning and rolling.\n\n- **Features**:\n    \n    - Returns a collection of all ducks in the system.\n        \n    - Displays each duck's name, rarity, and profession.\n        \n    - Helps users explore the full gacha collection available to them.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "36139491"
+	},
+	"item": [
+		{
+			"name": "PlayerService",
+			"item": [
+				{
+					"name": "getprofile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{token}}",
+								"type": "text"
+							}
+						],
+						"url": "http://0.0.0.0:8003/profile/"
+					},
+					"response": []
+				},
+				{
+					"name": "home",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{token}}",
+								"type": "text"
+							}
+						],
+						"url": "http://0.0.0.0:8003/home/"
+					},
+					"response": []
+				},
+				{
+					"name": "Transaction",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{token}}",
+								"type": "text"
+							}
+						],
+						"url": "http://0.0.0.0:8003/transactions/"
+					},
+					"response": []
+				},
+				{
+					"name": "buyCurrency",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 50.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://0.0.0.0:8003/buy_currency/"
+					},
+					"response": []
+				},
+				{
+					"name": "my-collection",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{token}}",
+								"type": "text"
+							}
+						],
+						"url": "http://0.0.0.0:8003/my-collection/"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AuctionService",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bid_amount\": 150.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://0.0.0.0:8001/secure-bid/{{auction_id}}/"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserService",
+			"item": [
+				{
+					"name": "AdminManag",
+					"item": [
+						{
+							"name": "createGacha",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Duck 1\",\n    \"rarity\": \"Common\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://0.0.0.0:8004/manag/duck/create/"
+							},
+							"response": []
+						},
+						{
+							"name": "createGacha Copy",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Duck 1\",\n    \"rarity\": \"Common\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://0.0.0.0:8004/manag/duck/all/"
+							},
+							"response": []
+						},
+						{
+							"name": "deleteGacha",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Duck 1\",\n    \"rarity\": \"Common\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://0.0.0.0:8004/manag/duck/create/"
+							},
+							"response": []
+						},
+						{
+							"name": "updateGacha",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Updated Duck 1\",\n    \"rarity\": \"Rare\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://0.0.0.0:8004/manag/duck/<gacha_id>/update/"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"new_user\",\n    \"password\": \"secure_password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://0.0.0.0:8004/register/"
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUser",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"new_user\",\n    \"password\": \"secure_password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://0.0.0.0:8004/user/delete/"
+					},
+					"response": []
+				},
+				{
+					"name": "userModify",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"updated_user\",\n    \"email\": \"new_email@example.com\",\n    \"password\": \"new_secure_password\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://0.0.0.0:8004/user/modify/"
+					},
+					"response": []
+				},
+				{
+					"name": "register Copy 2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"user1\",\n    \"password\": \"ASE123ermi!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://0.0.0.0:8004/login/"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DuckService",
+			"item": [
+				{
+					"name": "spin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{token}}",
+								"type": "text"
+							}
+						],
+						"url": "http://0.0.0.0:8002/spin/"
+					},
+					"response": []
+				},
+				{
+					"name": "gachaInfo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{token}}",
+								"type": "text"
+							}
+						],
+						"url": "http://0.0.0.0:8002/system-gacha-info/<gacha_id>/"
+					},
+					"response": []
+				},
+				{
+					"name": "gachaInfo Copy",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{token}}",
+								"type": "text"
+							}
+						],
+						"url": "http://0.0.0.0:8002/system-collection/"
+					},
+					"response": []
+				},
+				{
+					"name": "rollGacha",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{token}}",
+								"type": "text"
+							}
+						],
+						"url": "http://0.0.0.0:8002/roll/"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -25,6 +25,7 @@ urlpatterns = [
     path('user/delete/', user_delete_api, name='delete_user'),
     path('user/modify/', modify_user, name='userModify'),
 
+
     # path('bid/<int:auction_id>/', place_bid_api, name='place_bid'),
     path('my-collection/', my_gacha_collection, name='my_gacha_collection'),
     path('gacha-info/<int:gacha_id>/', gacha_info, name='gacha_info'),
