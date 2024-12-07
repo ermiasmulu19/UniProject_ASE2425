@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
-from auctionservice.auction.models import Auction, Player, User
+from .models import Auction, Player, User
 from rest_framework.test import APIClient
 
 class AuctionBidTests(TestCase):

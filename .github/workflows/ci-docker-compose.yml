@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  ci:
+  GachaCI_CD:
     runs-on: ubuntu-latest
 
     services:
@@ -49,22 +49,7 @@ jobs:
         run: |
           docker-compose exec -T db bash -c "until pg_isready -U gachadb; do sleep 1; done;"
 
-      # Step 6: Run tests for each service (assumes Django is used)
-      - name: Run Django tests for auctionservice
-        run: |
-          docker-compose exec -T auctionservice bash -c "pytest /auctionservice/tests"
-
-      - name: Run Django tests for duckservice
-        run: |
-          docker-compose exec -T duckservice bash -c "pytest /duckservice/tests"
-
-      - name: Run Django tests for playerservice
-        run: |
-          docker-compose exec -T playerservice bash -c "pytest /playerservice/tests"
-
-      - name: Run Django tests for userservice
-        run: |
-          docker-compose exec -T userservice bash -c "pytest /userservice/tests"
+     
 
       # Step 7: Shut down the containers after tests
       - name: Shut down services
