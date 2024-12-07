@@ -1,6 +1,6 @@
 import sys
 
-from playerservice.player.serializers import AuctionSerializer, DuckSerializer
+from .serializers import AuctionSerializer, DuckSerializer
 from rest_framework.permissions import IsAuthenticated
 from decimal import Decimal
 from .models import Player,Duck

@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 
-from duckservice.duck.serializers import DuckSerializer
+from .serializers import DuckSerializer
 
 # from api.serializers import DuckSerializer
 from .models import Duck, Auction, Player

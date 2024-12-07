@@ -8,8 +8,9 @@ from django.contrib.auth import logout
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
 from django.views.decorators.csrf import csrf_exempt
-from api.permission import IsAdmin
-from userservice.users.serializers import DuckSerializer
+from .permission import IsAdmin
+from .serializers import DuckSerializer
+from .permission import IsAdmin
 
 from .models import Duck, Player
 
