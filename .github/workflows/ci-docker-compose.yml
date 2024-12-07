@@ -42,7 +42,7 @@ jobs:
       # Step 4: Build and start services with Docker Compose
       - name: Build and start containers
         run: |
-          docker-compose -f ../../docker-compose.yml up -d
+          docker-compose -f ../../docker-compose.yaml up -d
 
       # Step 5: Wait for services to be ready (PostgreSQL, etc.)
       - name: Wait for services to be ready
