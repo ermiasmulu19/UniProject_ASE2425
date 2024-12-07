@@ -20,7 +20,7 @@ from player.views import buy_currency, home_api, my_gacha_collection, profile, t
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-     path('home/', home_api, name='home'),
+    path('home/', home_api, name='home'),
     path('profile/', profile, name='profile'),
     path('transactions/', transaction_history, name='transaction_history'),
     path('buy_currency/', buy_currency, name='buy_currency'),
