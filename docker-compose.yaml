@@ -1,6 +1,25 @@
 version: '3.8'
 
+
 services:
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_reverse_proxy
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./ssl/cert.crt:/etc/nginx/certs/cert.crt
+      - ./ssl/private.key:/etc/nginx/certs/private.key
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      - auctionservice
+      - playerservice
+      - userservice
+      - duckservice
+    networks:
+      - django-network
   db:
     image: postgres:14  
     container_name: postgres_container
@@ -22,7 +41,7 @@ services:
       dockerfile: Dockerfile
     container_name: auctionservice
     ports:
-      - "8001:8000"
+      - "8001:8001"
     volumes:
       - ./auctionservice:/auctionservice
     depends_on:
@@ -40,7 +59,7 @@ services:
       dockerfile: Dockerfile
     container_name: duckservice
     ports:
-      - "8002:8000"
+      - "8002:8002"
     volumes:
       - ./duckservice:/duckservice
     depends_on:
@@ -59,7 +78,7 @@ services:
       dockerfile: Dockerfile
     container_name: playerservice
     ports:
-      - "8003:8000"
+      - "8003:8003"
     volumes:
       - ./playerservice:/playerservice
     depends_on:
@@ -78,7 +97,7 @@ services:
       dockerfile: Dockerfile
     container_name: userservice
     ports:
-      - "8004:8000"
+      - "8004:8004"
     volumes:
       - ./userservice:/userservice
     depends_on:
