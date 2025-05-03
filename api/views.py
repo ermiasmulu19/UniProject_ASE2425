@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
-from api.permission import IsAdmin
+from userservice.users.permission import IsAdmin
 from api.serializers import AuctionSerializer, DuckSerializer
 from .models import Duck, Auction, Player
 from datetime import timedelta

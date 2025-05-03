@@ -110,6 +110,8 @@ services:
       - django-network
 
 volumes:
+
+
   db_data:
 
 networks:
